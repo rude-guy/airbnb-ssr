@@ -30,7 +30,7 @@ function changePage (pageNo: number) {
     >
       <img :src='item.pictureUrl' alt=''>
       <div class='title'>{{ item.title }}</div>
-      <div class='price'>{{ item.price }}</div>
+      <p class="price">¥{{ item.price }}元</p>
     </div>
   </div>
   <!--分页-->
