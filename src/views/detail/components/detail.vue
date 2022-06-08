@@ -1,13 +1,16 @@
 <script setup lang='ts'>
 import { useI18n } from 'vue-i18n'
-import { computed, getCurrentInstance, reactive, ref } from 'vue'
+import { computed, getCurrentInstance, onMounted, reactive, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from '@/store'
 import { saveOrderApi } from '@/api/order/order'
-import { useRoute } from 'vue-router'
+import useToast from '@/composables/common/useToast'
+import { saveRecordApi } from '@/api/record'
 
 const { t } = useI18n()
 const store = useStore()
 const route = useRoute()
+const router = useRouter()
 
 const roomDetail = computed(() => store.state.roomDetail)
 
@@ -19,8 +22,24 @@ const ruleForm = ref()
 
 const { proxy }: any = getCurrentInstance()
 
+const { visible: toastVisible, showToast } = useToast()
+
+onMounted(() => {
+  saveRecord()
+})
+
 function submitForm () {
-  saveOrder()
+  if (store.state.userStatus === 1) {
+    saveOrder()
+  } else {
+    const pathname = route.path
+    router.replace({
+      path: '/login',
+      query: {
+        redirect: pathname
+      }
+    })
+  }
 }
 
 function saveOrder () {
@@ -37,15 +56,44 @@ function saveOrder () {
   saveOrderApi(params).then((res:any) => {
     const { success, message } = res
     if (success) {
-      console.log('成功')
+      showToast(1500)
     } else {
       proxy.$message.error(message)
     }
   })
 }
+
+// 保存历史足迹
+function saveRecord () {
+  const { id: recordId } = route.params
+  const {
+    title,
+    price,
+    imgs,
+    personNumber
+  } = roomDetail.value
+  const params = {
+    recordId,
+    title,
+    price,
+    personNumber,
+    pictureUrl: imgs[0]
+  }
+  saveRecordApi(params).then((res) => {
+    // console.log(res)
+    // const { success, message } = res
+    // if (!success) {
+    //   proxy.$message.error(message)
+    // }
+  })
+}
 </script>
 
 <template>
+  <!-- Toast -->
+  <Teleport to="#app" v-if="toastVisible">
+    <el-alert :title="t('detail.reservated')" type="success" :closable="false"></el-alert>
+  </Teleport>
   <div v-if="roomDetail && roomDetail.info && roomDetail.owner">
     <!--照片墙-->
     <el-carousel
@@ -135,6 +183,7 @@ function saveOrder () {
   </div>
 </template>
 
-<style scoped>
-
+<style lang='scss'>
+@import "src/assets/scss/detail/index.scss";
+@import "src/assets/scss/common/toast.scss";
 </style>

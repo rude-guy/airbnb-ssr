@@ -1,9 +1,16 @@
 <script lang='ts'>
-import { defineComponent } from 'vue'
+import { defineComponent, watchEffect } from 'vue'
 import RoomDetail from '@/views/detail/components/detail.vue'
+import { useRoute } from 'vue-router'
+import { useStore } from '@/store'
 
 export default defineComponent({
   components: { RoomDetail },
+  setup () {
+    const route = useRoute()
+    const store = useStore()
+    watchEffect(() => store.dispatch('getRoomDetail', route.params))
+  },
   asyncData ({ store, route }: any) {
     const { roomId } = store.state
     const { id } = route.value.params
@@ -15,9 +22,3 @@ export default defineComponent({
 <template>
  <room-detail />
 </template>
-
-<style lang='scss'>
-@import "src/assets/scss/detail/index.scss";
-//@import "src/assets/scss/detail/index.scss";
-@import "src/assets/scss/common/toast.scss";
-</style>

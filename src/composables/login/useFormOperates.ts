@@ -1,4 +1,5 @@
 import { reactive, ref } from 'vue'
+// @ts-ignore
 import { FormInstance, FormRules } from 'element-plus'
 
 export interface IRuleForm {

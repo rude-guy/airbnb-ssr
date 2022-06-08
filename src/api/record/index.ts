@@ -1,11 +1,11 @@
 import { ElLoading } from 'element-plus'
+import { IResultOr } from '@/api/interface'
 import airbnb from '@/db'
-import { IResultOr } from '@/api/interface' // 引入数据库和对象仓库
 
-const storeName = Object.keys(airbnb.orderObjectStore)[0]
+const storeName = Object.keys(airbnb.recordObjectStore)[0]
 
-// Mock接口：立即预定
-export async function saveOrderApi (params: any) {
+// Mock接口：保存浏览记录
+export async function saveRecordApi (params: any) {
   const userId = localStorage.getItem('userId')
   const loading = ElLoading.service({
     lock: true,
@@ -13,13 +13,13 @@ export async function saveOrderApi (params: any) {
   })
 
   // 是否存在相同订单Id
-  const hasOrderId = await new Promise((resolve, reject) => {
+  const hasRecordId = await new Promise((resolve, reject) => {
     airbnb.airbnbDB.getList(storeName).then((res: any) => {
       setTimeout(() => {
         loading.close()
       }, 200)
       res && res.forEach((item: any) => {
-        if (item.orderId === params.orderId && item.userId === userId) { // 存在相同订单Id
+        if (item.recordId === params.recordId && item.userId === userId) { // 存在相同订单Id
           resolve(true)
         }
       })
@@ -27,7 +27,7 @@ export async function saveOrderApi (params: any) {
     })
   })
   let result: IResultOr
-  if (hasOrderId) {
+  if (hasRecordId) {
     result = await new Promise((resolve, reject) => {
       resolve({ code: '000001', success: false, message: '数据已存在', result: null })
     })
@@ -45,10 +45,9 @@ export async function saveOrderApi (params: any) {
   return result
 }
 
-// Mock接口：订单列表
-export async function fetchOrderApi () {
+// Mock接口：浏览记录列表
+export async function fetchRecordApi () {
   const userId = localStorage.getItem('userId')
-
   const loading = ElLoading.service({
     lock: true,
     background: 'rgba(0, 0, 0, 0.1)'
@@ -58,12 +57,12 @@ export async function fetchOrderApi () {
       setTimeout(() => {
         loading.close()
       }, 200)
-      res = res.filter((item: any) => {
-        return item.userId === userId
-      })
-      setTimeout(() => { // 有意延迟200毫秒，感受异步组件的效果
+      setTimeout(() => { // 有意延迟500毫秒，感受异步组件的效果
+        res = res.filter((item: any) => { // 过滤出当前账号下的数据
+          return item.userId === userId
+        })
         resolve({ code: '000000', success: true, message: '操作成功', result: res || null })
-      }, 200)
+      }, 500)
     })
   })
   return result

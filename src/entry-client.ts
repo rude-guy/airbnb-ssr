@@ -12,7 +12,8 @@ router.beforeEach((to, from, next) => {
   airbnb.airbnbDB.openStore({
     ...airbnb.languageObjectStore,
     ...airbnb.userObjectStore,
-    ...airbnb.orderObjectStore
+    ...airbnb.orderObjectStore,
+    ...airbnb.recordObjectStore
   }).then((res: any) => {
     next()
   })
@@ -30,9 +31,6 @@ router.isReady().then(() => {
       return fromComponents[i] !== c
     })
 
-    if (!actived.length) {
-      return next()
-    }
     if (!actived.length) {
       return next()
     }

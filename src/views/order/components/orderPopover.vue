@@ -1,32 +1,70 @@
 <script setup lang='ts'>
-import { reactive, ref } from 'vue'
+import { getCurrentInstance, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
-
+import { fetchOrderApi } from '@/api/order/order'
+import { useStore } from '@/store'
+import { useRoute, useRouter } from 'vue-router'
 const { t } = useI18n()
-const count = ref(0)
-const orderData = reactive([])
-function fetchApi () {
-  return new Promise((resolve) => {
-    count.value = 6
-    resolve(true)
+const store = useStore()
+let orderData = reactive<any[]>([])
+const { proxy }: any = getCurrentInstance()
+const route = useRoute()
+const router = useRouter()
+
+// 房屋订单中心列表
+function fetchOrder () {
+  return fetchOrderApi().then((res) => {
+    const { result, success, message } = res
+    if (success) {
+      orderData = result
+    } else {
+      proxy.$message.error(message)
+    }
   })
 }
-await fetchApi()
+
+if (store.state.userStatus) {
+  await fetchOrder()
+} else {
+  const pathname = route.path
+  router.replace({
+    path: '/login',
+    query: {
+      redirect: pathname
+    }
+  })
+  closeMask()
+}
+
+// 关闭遮罩 popover
+function closeMask () {
+  store.commit('setOrderVisible', false)
+}
+
+function toDetail (item: any) {
+  const { recordId: id } = item
+  router.push({ path: `/roomDetail/${id}` })
+  store.commit('setRoomId', id)
+}
+
 </script>
 
 <template>
-  <ul v-if='orderData.length === 0'>
-    <li v-for="(item, index) in count" :key="index" @click="toDetail(item)">
-      <img :src="item.pictureUrl" :alt='index'/>
+  <Teleport to="#app">
+    <div class="mask" @click="closeMask"></div>
+  </Teleport>
+  <ul v-if="orderData.length > 0">
+    <li v-for="(item, index) in orderData" :key="index" @click="toDetail(item)">
+      <img :src="item.pictureUrl" />
       <div class="mess">
-        <p class="title">{{ `item.title` }}</p>
+        <p class="title">{{ item.title }}</p>
         <p
             class="info"
-        >¥{{ `item.price` }}/{{ t('detail.night') }} · {{ `item.personNumber` }}{{ t('detail.person') }}</p>
+        >¥{{ item.price }}/{{ t('detail.night') }} · {{ item.personNumber }}{{ t('detail.person') }}</p>
       </div>
     </li>
   </ul>
-  <div v-else class="loading-block">{{ t('common.empty') }}</div>
+  <div v-else class="loading-block">{{ t("common.empty") }}</div>
 </template>
 
 <style scoped lang='scss'>

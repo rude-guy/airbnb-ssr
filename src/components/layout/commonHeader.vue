@@ -30,6 +30,8 @@ function handleSelect (e: any) {
     useLogout()
   } else if (e === 'orders') {
     store.commit('setOrderVisible', true)
+  } else if (e === 'records') {
+    router.push({ name: 'record' })
   }
 }
 
