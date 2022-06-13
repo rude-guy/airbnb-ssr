@@ -1,6 +1,6 @@
 import { InjectionKey } from 'vue'
 import { createStore, Store, useStore as useBaseStore } from 'vuex'
-import { saveLanguageApi } from '@/api/layout'
+import { getCities, saveLanguageApi } from '@/api/layout'
 import { IRoomDetailParams, IRoomListParams } from '@/api/interface'
 import { fetchRoomList } from '@/api/home'
 import { fetchDetail } from '@/api/detail'
@@ -14,10 +14,16 @@ export interface AllStateTypes {
   pageNo: number
   pageSize: number
   total: number
-  cityCode: string
+  cityId: string
   roomDetail: any,
-  roomId: any,
-  orderVisible: boolean
+  roomId: string,
+  orderVisible: boolean,
+  cities: {
+    _id: string,
+    cityId: string,
+    cityName: string
+  }[],
+  userInfo: any
 }
 
 // 定义 injection key
@@ -37,10 +43,12 @@ export function createSSRStore () {
       pageNo: 1,
       pageSize: 6,
       total: 0,
-      cityCode: 'hz',
+      cityId: '',
       roomDetail: {},
-      roomId: null,
-      orderVisible: false
+      roomId: '',
+      orderVisible: false,
+      cities: [],
+      userInfo: {}
     },
     mutations: {
       setCount (state, payload) {
@@ -63,10 +71,19 @@ export function createSSRStore () {
       },
       setOrderVisible (state, payload) { // 设置房屋详情 id
         state.orderVisible = payload
+      },
+      setCities (state, payload) {
+        state.cities = payload
+      },
+      setUserInfo (state, payload) {
+        state.userInfo = payload
       }
     },
     actions: {
-      fetchCount ({ commit, state }, payload) {
+      fetchCount ({
+        commit,
+        state
+      }, payload) {
         setTimeout(() => {
           commit('setCount', payload)
         }, 1000)
@@ -79,17 +96,30 @@ export function createSSRStore () {
           }
         })
       },
-      getRoomList ({ commit, state }, payload: IRoomListParams) {
-        const { pageNo, cityCode = state.cityCode } = payload
+      async getRoomList ({
+        commit,
+        state
+      }, payload: IRoomListParams) {
+        let cities = state.cities
+        if (!cities.length) {
+          const { result } = await getCities()
+          cities = result
+          state.cityId = cities[0]?._id
+          commit('setCities', cities)
+        }
+        const { pageNo, cityId = state.cityId } = payload
         const params = {
           pageNo,
           pageSize: state.pageSize,
-          cityCode
+          cityId: cityId
         }
         state.pageNo = pageNo
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
           fetchRoomList(params).then(res => {
-            const { success, result } = res as any
+            const {
+              success,
+              result
+            } = res as any
             const orders = result.orders
             const total = result.total
             if (success) {
@@ -101,7 +131,10 @@ export function createSSRStore () {
         })
       },
       // 房屋详情接口
-      getRoomDetail ({ commit, state }, payload: IRoomDetailParams) {
+      getRoomDetail ({
+        commit,
+        state
+      }, payload: IRoomDetailParams) {
         const { id } = payload
         return new Promise((resolve, reject) => {
           fetchDetail({ id }).then(res => {
@@ -110,7 +143,7 @@ export function createSSRStore () {
               commit('setRoomDetail', result)
               resolve(true)
             }
-          }).catch(console.log)
+          })
         })
       }
     }

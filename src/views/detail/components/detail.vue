@@ -1,16 +1,16 @@
 <script setup lang='ts'>
 import { useI18n } from 'vue-i18n'
-import { computed, getCurrentInstance, onMounted, reactive, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, getCurrentInstance, onMounted, reactive, ref, watchEffect } from 'vue'
 import { useStore } from '@/store'
 import { saveOrderApi } from '@/api/order/order'
 import useToast from '@/composables/common/useToast'
 import { saveRecordApi } from '@/api/record'
+import { useRoute, useRouter } from 'vue-router'
 
 const { t } = useI18n()
 const store = useStore()
-const route = useRoute()
 const router = useRouter()
+const route = useRoute()
 
 const roomDetail = computed(() => store.state.roomDetail)
 
@@ -22,71 +22,91 @@ const ruleForm = ref()
 
 const { proxy }: any = getCurrentInstance()
 
-const { visible: toastVisible, showToast } = useToast()
+const {
+  visible: toastVisible,
+  showToast
+} = useToast()
+
+const recordId = ref()
 
 onMounted(() => {
   saveRecord()
 })
 
 function submitForm () {
-  if (store.state.userStatus === 1) {
-    saveOrder()
-  } else {
-    const pathname = route.path
-    router.replace({
-      path: '/login',
-      query: {
-        redirect: pathname
-      }
-    })
-  }
+  saveOrder()
 }
 
 function saveOrder () {
-  const { id: recordId } = route.params
-  const { title, price, imgs } = roomDetail.value
+  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '""')
   const { personNumber } = orderForm
   const params = {
-    recordId,
-    title,
-    price,
     personNumber,
-    pictureUrl: imgs[0]
+    userId: userInfo._id
   }
-  saveOrderApi(params).then((res:any) => {
-    const { success, message } = res
+  saveOrderApi(recordId.value, params).then((res: any) => {
+    const {
+      success,
+      message
+    } = res
     if (success) {
       showToast(1500)
     } else {
       proxy.$message.error(message)
+    }
+  }).catch(err => {
+    if (err.response?.status === 401) {
+      proxy.$message.warning(t('login.loginExpired'))
+      const pathname = route.path
+      setTimeout(() => {
+        router.replace({
+          path: '/login',
+          query: {
+            redirect: pathname
+          }
+        })
+      }, 200)
+    } else if (err.response) {
+      proxy.$message.error()
     }
   })
 }
 
 // 保存历史足迹
 function saveRecord () {
-  const { id: recordId } = route.params
+  // todo 用户信息
+  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '""')
+  if (!userInfo) {
+    return
+  }
   const {
     title,
     price,
-    imgs,
-    personNumber
+    imgs = [],
+    personNumber = 0
   } = roomDetail.value
+  const { id } = route.params
   const params = {
-    recordId,
+    userId: userInfo._id,
     title,
     price,
     personNumber,
-    pictureUrl: imgs[0]
+    pictureUrl: imgs[0],
+    roomId: id
   }
   saveRecordApi(params).then((res) => {
-    // console.log(res)
-    // const { success, message } = res
-    // if (!success) {
-    //   proxy.$message.error(message)
-    // }
+    const {
+      success,
+      message,
+      result
+    } = res
+    recordId.value = result._id
+    if (!success) {
+      proxy.$message.error(message)
+    }
   })
 }
+
 </script>
 
 <template>
@@ -113,7 +133,7 @@ function saveRecord () {
       <!--房屋详情信息-->
       <div class='room-detail'>
         <div class='detail-part'>
-          <h2>{{roomDetail.title}}</h2>
+          <h2>{{ roomDetail.title }}</h2>
           <div class='info'>
             <span class="room">{{ roomDetail.info.room }} {{ t('detail.rooms') }}</span>
             <span class="bed">{{ roomDetail.info.bed }} {{ t('detail.beds') }}</span>
@@ -129,33 +149,36 @@ function saveRecord () {
                 class="ml-10"
                 type="danger"
                 v-if="roomDetail.info.metro"
-            >{{ t('detail.nearSubway') }}</el-tag>
+            >{{ t('detail.nearSubway') }}
+            </el-tag>
             <el-tag
                 size="small"
                 class="ml-10"
                 type="warning"
                 v-if="roomDetail.info.parking"
-            >{{ t('detail.freeParking') }}</el-tag>
+            >{{ t('detail.freeParking') }}
+            </el-tag>
             <el-tag
                 size="small"
                 class="ml-10"
                 type="success"
                 v-if="roomDetail.info.luggage"
-            >{{ t('detail.luggage') }}</el-tag>
+            >{{ t('detail.luggage') }}
+            </el-tag>
           </div>
-          <hr />
+          <hr/>
           <div class='owner-detail'>
-            <img :src='roomDetail.owner.avatar' alt=''>
+            <img :src='roomDetail.owner.avatar_url' alt=''>
             <div class='info'>
-              <p>{{ t('detail.landlord') }}：{{ roomDetail.owner.name }}</p>
+              <p>{{ t('detail.landlord') }}：{{ roomDetail.owner.username }}</p>
               <p>
-                <span v-if="roomDetail.owner.certify">{{ t('detail.authenticated') }}</span>
+                <span v-if="roomDetail.certify">{{ t('detail.authenticated') }}</span>
                 <span v-if="roomDetail.info.goodOwner">{{ t('detail.greatlandlord') }}</span>
               </p>
             </div>
           </div>
           <!--基本介绍-->
-          <div class="introduce">{{ roomDetail.owner.introduce }}</div>
+          <div class="introduce">{{ roomDetail.introduce }}</div>
         </div>
         <div class='form-part'>
           <p class="price">
@@ -174,7 +197,8 @@ function saveRecord () {
                   class="btn-primary"
                   type="primary"
                   @click="submitForm"
-              >{{ t('detail.order') }}</el-button>
+              >{{ t('detail.order') }}
+              </el-button>
             </el-form-item>
           </el-form>
         </div>

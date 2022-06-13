@@ -6,8 +6,13 @@
 import { ElLoading } from 'element-plus'
 import { IResultOr } from '@/api/interface'
 import airbnb from '@/db'
+import { http } from '@/utils/http'
 
 const storeName = Object.keys(airbnb.languageObjectStore)[0]
+
+export async function getCities (): Promise<IResultOr> {
+  return http.httpGet('/cities/findAll')
+}
 
 // Mock接口：保存当前语言包
 export async function saveLanguageApi (lang: any) {

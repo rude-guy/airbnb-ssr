@@ -32,10 +32,11 @@ export default {
     signBtn: 'Sign up',
     loginTab: 'Log in',
     signTab: 'Sign up',
-    placeMobile: 'Please  write correct mobile number',
+    placeMobile: 'Please  write correct email',
     placePass: 'Please white corret password',
     logout: 'Logout',
-    loginLost: 'Please login first'
+    loginLost: 'Please login first',
+    loginExpired: 'Authentication expired, please login again'
   },
   home: {
     h2Title: "New Year's Eve Discounts Housing Resource",

@@ -2,7 +2,11 @@ import { asyncDataFilter, createApp } from '@/main'
 import airbnb from '@/db'
 import { ElLoading } from 'element-plus'
 
-const { app, router, store } = createApp()
+const {
+  app,
+  router,
+  store
+} = createApp()
 
 if ((window as any).__INITIAL_STATE__) {
   store.replaceState((window as any).__INITIAL_STATE__)
@@ -48,10 +52,17 @@ router.isReady().then(() => {
 
 router.beforeEach((to, from, next) => {
   const { roomDetail } = store.state
-  const { title: roomTitle = '', owner = {} } = roomDetail || {}
+  const {
+    title: roomTitle = '',
+    owner = {}
+  } = roomDetail || {}
   const { introduce = '' } = owner
   const { meta } = to
-  const { title = '', keywords = '', description = '' } = meta
+  const {
+    title = '',
+    keywords = '',
+    description = ''
+  } = meta
   document.title = `${title}${roomTitle}`
   const keywordsMeta: HTMLMetaElement | null = document.querySelector('meta[name="keywords"]')
   const descriptionMeta: HTMLMetaElement | null = document.querySelector('meta[name="description"]')

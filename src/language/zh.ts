@@ -32,10 +32,11 @@ export default {
     signBtn: '立即注册',
     loginTab: '登录',
     signTab: '注册',
-    placeMobile: '请输入正确的手机号',
+    placeMobile: '请输入正确的邮箱',
     placePass: '请输入正确的密码',
     logout: '退出',
-    loginLost: '您还未登录，请先登录哦~'
+    loginLost: '您还未登录，请先登录哦~',
+    loginExpired: '身份验证过期，请先登录哦~'
   },
   home: {
     h2Title: '跨年特惠房源',

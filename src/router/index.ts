@@ -60,6 +60,10 @@ const routes = [
       description: '',
       keepAlive: false
     }
+  },
+  {
+    path: '/',
+    redirect: { name: 'home' }
   }
 ]
 

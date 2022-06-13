@@ -1,21 +1,24 @@
 <script setup lang='ts'>
-import { defineAsyncComponent, getCurrentInstance, ref } from 'vue'
+import { computed, defineAsyncComponent, getCurrentInstance, ref } from 'vue'
 import { useStore } from '@/store'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import zhCn from 'element-plus/lib/locale/lang/zh-cn.js'
 import en from 'element-plus/lib/locale/lang/en.js'
 import { fetchLanguageApi } from '@/api/layout'
-import { userLogoutApi } from '@/api/login'
-import { IResultOr } from '@/api/interface'
 
 const OrderPopover = defineAsyncComponent(() => import('@/views/order/components/orderPopover.vue'))
 
-const { t, locale: localeLanguage } = useI18n()
+const {
+  t,
+  locale: localeLanguage
+} = useI18n()
 const router = useRouter()
 const { proxy }: any = getCurrentInstance()
 const activeIndex = ref(0)
 const store = useStore()
+
+const userInfo = computed(() => store.state.userInfo)
 
 function handleSelect (e: any) {
   if (e === 'zh') {
@@ -53,25 +56,12 @@ function getLanguage () {
   })
 }
 
-// getLanguage()
-// const userStatus = localStorage.getItem('userStatus')
-
 // 登出接口
 function useLogout () {
-  userLogoutApi().then((res: IResultOr) => {
-    const {
-      success,
-      message
-    } = res
-    if (success) {
-      proxy.$message.success(message)
-      router.push({ name: 'login' })
-      // localStorage.setItem('userStatus', '0')
-      store.commit('setUserStatus', 0)
-    } else {
-      proxy.$message.error(message)
-    }
-  })
+  localStorage.clear()
+  proxy.$message.success('退出成功')
+  router.push({ name: 'login' })
+  store.commit('setUserStatus', 0)
 }
 
 </script>
@@ -108,9 +98,9 @@ function useLogout () {
         <el-menu-item index="zh">中文</el-menu-item>
         <el-menu-item index="en">English</el-menu-item>
       </el-sub-menu>
-      <el-sub-menu index='avatar' v-if="store.state.userStatus === 1">
+      <el-sub-menu index='avatar' v-if="userInfo">
         <template #title>
-          <img class='avatar' src='../../assets/images/layout/avatar.jpg' alt='个人中心'>
+          <img class='avatar' :src='userInfo.avatar_url' alt='个人中心'>
         </template>
         <el-menu-item index='logout'>退出</el-menu-item>
       </el-sub-menu>

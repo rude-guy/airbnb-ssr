@@ -3,25 +3,23 @@ import { reactive, ref } from 'vue'
 import { FormInstance, FormRules } from 'element-plus'
 
 export interface IRuleForm {
-  mobile: string,
+  email: string,
   password: string
 }
 const useFormOperates = function (t: any) {
   const activeName = ref('login')
   const ruleFormRef = ref<FormInstance>()
   const ruleForm: IRuleForm = reactive({
-    mobile: '13541689124',
+    email: '2064825357@qq.com',
     password: '123456'
   })
   const rules = reactive<FormRules>({
-    mobile: [
+    email: [
       {
         required: true,
-        min: 11,
-        max: 11,
         message: t('login.placeMobile'),
         trigger: 'blur'
-      }
+      }, { pattern: /^([0-9A-Za-z\-_.]+)@([0-9a-z]+\.[a-z]{2,3}(\.[a-z]{2})?)$/g, message: t('login.placeMobile'), trigger: 'blur' }
     ],
     password: [
       {

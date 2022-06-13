@@ -10,7 +10,7 @@ const { loginText, ruleFormRef, activeName, rules, ruleForm } = useFormOperates(
 const { useSign, useLogin } = useFormProperties()
 
 function handleClick (e: any) {
-  const { name, label } = e.props
+  const { name } = e.props
   if (name === 'login') {
     loginText.value = t('login.loginBtn')
   } else if (name === 'sign') {
@@ -45,8 +45,8 @@ function submitForm () {
         </el-tabs>
         <!-- 表单组件 -->
         <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules">
-          <el-form-item prop="mobile">
-            <el-input :placeholder="t('login.placeMobile')" v-model="ruleForm.mobile"></el-input>
+          <el-form-item prop="email">
+            <el-input :placeholder="t('login.placeMobile')" v-model="ruleForm.email"></el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input

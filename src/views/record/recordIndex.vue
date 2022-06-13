@@ -1,25 +1,43 @@
 <script setup lang='ts'>
 import { getCurrentInstance, onMounted, ref } from 'vue'
 import { fetchRecordApi } from '@/api/record'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useStore } from '@/store'
 import { useI18n } from 'vue-i18n'
+
 const { t } = useI18n()
 const { proxy }: any = getCurrentInstance()
 const recordData = ref([])
+const route = useRoute()
 const store = useStore()
 const router = useRouter()
 const loading = ref(true)
 
 function fetchRecord () {
   fetchRecordApi().then(res => {
-    const { success, message, result } = res
+    const {
+      success,
+      message,
+      result
+    } = res
     loading.value = false
     if (success) {
-      console.log('历史足迹数据', res)
       recordData.value = result
     } else {
       proxy.$message.error(message)
+    }
+  }).catch(err => {
+    if (err.response?.status === 401) {
+      proxy.$message.warning(t('login.loginExpired'))
+      const pathname = route.path
+      setTimeout(() => {
+        router.replace({
+          path: '/login',
+          query: {
+            redirect: pathname
+          }
+        })
+      }, 200)
     }
   })
 }
@@ -40,7 +58,7 @@ onMounted(() => {
 })
 
 function toDetail (item: any) {
-  const { recordId: id } = item
+  const { roomId: id } = item
   router.push({ path: `/roomDetail/${id}` })
   store.commit('setRoomId', id)
 }
@@ -79,8 +97,10 @@ function toDetail (item: any) {
 .record-page {
   .main-wrapper {
     @include main-wapper(30px);
+
     .column-style {
       column-count: 3;
+
       .item {
         width: 315px;
         overflow: hidden;
@@ -88,17 +108,20 @@ function toDetail (item: any) {
         cursor: pointer;
         text-align: left;
         display: inline-block;
+
         img {
           width: 315px;
           height: auto;
           border-radius: 4px;
         }
+
         .title {
           width: 315px;
           font-size: 18px;
           margin: 15px 0px;
           font-weight: bold;
         }
+
         .price {
           font-size: 16px;
         }

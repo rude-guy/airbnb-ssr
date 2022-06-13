@@ -35,7 +35,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/release': {
-        target: 'http://110.42.184.111',
+        target: 'http://localhost:3001',
         rewrite: path => path.replace(/^\/release/, '')
       }
     }

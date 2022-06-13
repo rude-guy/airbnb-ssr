@@ -36,7 +36,3 @@ function changePage (pageNo: number) {
   <!--分页-->
   <Pagination @changePage='changePage'/>
 </template>
-
-<style scoped>
-
-</style>
