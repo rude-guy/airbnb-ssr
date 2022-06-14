@@ -11,23 +11,23 @@ const footerMenu = reactive(
       menus: [
         {
           name: 'careers',
-          link: 'https://www.airbnb.cn/careers'
+          link: '#careers'
         },
         {
           name: 'news',
-          link: 'https://www.airbnb.cn/press/news'
+          link: '#news'
         },
         {
           name: 'topic',
-          link: 'https://www.airbnb.cn/help/topic/1578/法律条款'
+          link: '#topic'
         },
         {
           name: 'diversity',
-          link: 'https://www.airbnb.cn/diversity'
+          link: '#diversity'
         },
         {
           name: 'accessibility',
-          link: 'https://www.airbnb.cn/accessibility'
+          link: '#accessibility'
         }
       ]
     },
@@ -36,23 +36,23 @@ const footerMenu = reactive(
       menus: [
         {
           name: 'trustAndSafe',
-          link: 'https://www.airbnb.cn/trust'
+          link: '#trustAndSafe'
         },
         {
           name: 'invite',
-          link: 'https://www.airbnb.cn/invite?r=6'
+          link: '#invite'
         },
         {
           name: 'evection',
-          link: 'https://www.airbnb.cn/work?s=footer'
+          link: '#evection'
         },
         {
           name: 'magzine',
-          link: 'https://airbnbmag.com'
+          link: '#magzine'
         },
         {
           name: 'airbnborg',
-          link: 'https://www.airbnb.org/?locale=zh'
+          link: '#airbnborg'
         }
       ]
     },
@@ -61,23 +61,23 @@ const footerMenu = reactive(
       menus: [
         {
           name: 'whyRent',
-          link: 'https://www.airbnb.cn/host/homes?from_footer=1'
+          link: '#whyRent'
         },
         {
           name: 'hospitality',
-          link: 'https://www.airbnb.cn/hospitality'
+          link: '#hospitality'
         },
         {
           name: 'responsibleHosting',
-          link: 'https://www.airbnb.cn/help/responsible-hosting'
+          link: '#responsibleHosting'
         },
         {
           name: 'experiences',
-          link: 'https://www.airbnb.cn/host/experiences?from_footer=1'
+          link: '#experiences'
         },
         {
           name: 'resources',
-          link: 'https://www.airbnb.cn/resources?traffic_source=footer'
+          link: '#resources'
         }
       ]
     },
@@ -86,11 +86,11 @@ const footerMenu = reactive(
       menus: [
         {
           name: 'help',
-          link: 'https://www.airbnb.cn/help?from=footer'
+          link: '#help'
         },
         {
           name: 'neighbors',
-          link: 'https://www.airbnb.cn/neighbors'
+          link: '#neighbors'
         }
       ]
     }

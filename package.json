@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "build:client": "vite build --outDir dist/client --ssrManifest",
     "build:server": "vite build --outDir dist/server --ssr src/entry-server.ts",
-    "build:ssr": "npm run build:client && npm run build:server"
+    "build:ssr": "npm run build:client && npm run build:server",
+    "pm2": "cross-env NODE_ENV=production pm2 start server.js"
   },
   "dependencies": {
     "axios": "^0.24.0",

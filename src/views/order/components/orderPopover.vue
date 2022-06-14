@@ -28,6 +28,7 @@ function fetchOrder () {
   }).catch(err => {
     if (err.response?.status === 401) {
       proxy.$message.warning(t('login.loginExpired'))
+      localStorage.clear()
       const pathname = route.path
       setTimeout(() => {
         router.replace({
@@ -62,7 +63,7 @@ function closeMask () {
 }
 
 function toDetail (item: any) {
-  const { recordId: id } = item
+  const { roomId: id } = item
   router.push({ path: `/roomDetail/${id}` })
   store.commit('setRoomId', id)
 }

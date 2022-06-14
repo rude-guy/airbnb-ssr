@@ -98,15 +98,13 @@ function useLogout () {
         <el-menu-item index="zh">中文</el-menu-item>
         <el-menu-item index="en">English</el-menu-item>
       </el-sub-menu>
-      <el-sub-menu index='avatar' v-if="userInfo">
+      <el-sub-menu index='avatar' v-if="userInfo?.avatar_url">
         <template #title>
           <img class='avatar' :src='userInfo.avatar_url' alt='个人中心'>
         </template>
         <el-menu-item index='logout'>退出</el-menu-item>
       </el-sub-menu>
       <el-menu-item index="login" v-else>{{ t('login.loginTab') }}/{{ t('login.signTab') }}</el-menu-item>
-      <!--      <el-menu-item index="logout" v-if="1 === 1">{{ t("login.logout") }}</el-menu-item>-->
-      <!--            <el-menu-item index="login" v-else>{{ t("login.loginTab") }}/{{ t("login.signTab") }}</el-menu-item>-->
     </el-menu>
   </div>
 </template>

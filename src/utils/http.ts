@@ -3,7 +3,7 @@ import { ElLoading } from 'element-plus'
 
 const defaultConfig = {
   timeout: 5000,
-  baseURL: import.meta.env.PROD ? 'http://localhost:3001' : 'http://localhost:3000/release'
+  baseURL: import.meta.env.PROD ? 'http://49.235.70.227:9001' : 'http://localhost:3000/release'
 }
 
 class Http {

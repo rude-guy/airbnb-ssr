@@ -33,5 +33,6 @@ onMounted(() => {
 
 <style lang='scss'>
 .wrap {
+
 }
 </style>

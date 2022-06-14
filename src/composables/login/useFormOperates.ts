@@ -10,8 +10,8 @@ const useFormOperates = function (t: any) {
   const activeName = ref('login')
   const ruleFormRef = ref<FormInstance>()
   const ruleForm: IRuleForm = reactive({
-    email: '2064825357@qq.com',
-    password: '123456'
+    email: '',
+    password: ''
   })
   const rules = reactive<FormRules>({
     email: [

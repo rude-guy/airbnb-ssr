@@ -46,7 +46,10 @@ function submitForm () {
         <!-- 表单组件 -->
         <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules">
           <el-form-item prop="email">
-            <el-input :placeholder="t('login.placeMobile')" v-model="ruleForm.email"></el-input>
+            <el-input :placeholder="t('login.placeMobile')"
+                      v-model="ruleForm.email"
+                      autofocus
+            ></el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input

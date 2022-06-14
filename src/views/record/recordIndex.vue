@@ -29,6 +29,7 @@ function fetchRecord () {
   }).catch(err => {
     if (err.response?.status === 401) {
       proxy.$message.warning(t('login.loginExpired'))
+      localStorage.clear()
       const pathname = route.path
       setTimeout(() => {
         router.replace({
